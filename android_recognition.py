@@ -11,7 +11,7 @@ size = 4
 
 # We load the xml file
 classifier = cv2.CascadeClassifier('haarcascade_frontalface_alt.xml')
-mobile_video="http://192.168.0.101:8080/shot.jpg"
+mobile_video="http://192.168.0.100:8080/shot.jpg"
   # Using default WebCam connected to the PC.
 
 while True:
