@@ -6,22 +6,23 @@ from label_image import predict_with_confidence
 
 app = Flask(__name__)
 
-# Load Haar Cascade
+# ✅ File upload settings
+app.config["MAX_CONTENT_LENGTH"] = 16 * 1024 * 1024
+
+# ✅ Load Haar cascade
 face_cascade = cv2.CascadeClassifier(
     "haarcascade_frontalface_default.xml"
 )
 
 @app.route("/", methods=["GET"])
 def home():
-    return "Emotion Recognition API running ✅"
+    return "Emotion Detection Server Running ✅"
 
 @app.route("/predict", methods=["POST"])
 def predict():
-    # ✅ Ensure multipart/form-data
+    # ✅ ONLY check for image file
     if "image" not in request.files:
-        return jsonify(
-            {"error": "Unsupported Media Type or no image received"}
-        ), 415
+        return jsonify({"error": "No image file received"}), 415
 
     file = request.files["image"]
 
@@ -49,9 +50,10 @@ def predict():
     x, y, w, h = max(faces, key=lambda f: f[2] * f[3])
     face = img[y:y+h, x:x+w]
 
-    cv2.imwrite("face.jpg", face)
+    face_path = "/tmp/face.jpg"
+    cv2.imwrite(face_path, face)
 
-    emotion, confidence = predict_with_confidence("face.jpg")
+    emotion, confidence = predict_with_confidence(face_path)
 
     return jsonify({
         "emotion": emotion,
